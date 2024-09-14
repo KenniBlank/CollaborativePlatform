@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="message_holder"></div>
+
+    <form>
+        <input type="text" class="username" placeholder="User Name" />
+        <input type="text" class="message" placeholder="Messages" />
+        <input type="submit" />
+    </form>
+</body>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='index.js') }}"></script>
+</html>
