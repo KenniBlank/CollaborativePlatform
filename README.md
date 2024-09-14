@@ -5,4 +5,7 @@ A collaborative platform which supports multiple users at the same time
 
 - WebSocket + Flask for the basic chat application. No fanciness yet
 - Cross Origin Resource Sharing
-- Using PythonAnywhere to host temporarily
+- Cookies to handle reconnection
+
+## Video Connecting feature:
+- using webRTC and plain JS
