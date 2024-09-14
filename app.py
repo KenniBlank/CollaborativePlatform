@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
-from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-cors = CORS(app)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 # CORS(app)
@@ -12,7 +10,6 @@ socketio = SocketIO(app)
 users = {}
 
 # Route to render the HTML page
-@cross_origin()
 @app.route("/")
 def defaultRoute():
     return render_template("index.html", title="HomePage")
