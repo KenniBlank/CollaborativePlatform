@@ -12,8 +12,8 @@ socketio = SocketIO(app)
 users = {}
 
 # Route to render the HTML page
-@app.route("/")
 @cross_origin()
+@app.route("/")
 def defaultRoute():
     return render_template("index.html", title="HomePage")
 
