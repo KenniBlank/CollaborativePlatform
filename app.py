@@ -19,9 +19,9 @@ def defaultRoute():
 def user_sign_in(user_name, methods=['GET', 'POST']):
     users[request.sid] = user_name  # Associate user with session ID which is unique to every client on joining
     socketio.emit('current_users', users)  # Broadcast current users to everyone
+    socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.9em;\">{user_name} has joined the chat</i>")
     print(f"New user signed in: {user_name}")
     print(chatLog)
-    print("Current users:", users)
 
 @socketio.on("getChatLog")
 def chatLogging():
@@ -31,17 +31,12 @@ def chatLogging():
 # Event when a user disconnects: This is socket io default
 @socketio.on('disconnect')
 def on_disconnect():
-    removed_user = users.pop(request.sid, 'No user found')
+    removed_user = users.pop(request.sid, 'Spectator')
     socketio.emit('current_users', users)  # Broadcast current users to everyone, default
-    print(f"User {removed_user} disconnected!")
-    print("Current users:", users)
+    socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.9em;\">{removed_user} has left the chat</i>")
 
 def messageReceived():
     print('Message received!')
-
-@socketio.on('reconnect')
-def reconnect_logic(cookie):
-    print(cookie);
 
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):

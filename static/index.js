@@ -5,16 +5,13 @@ var socket = io();
 socket.on('connect', () => {
     document.querySelector('form').addEventListener('submit', (e) => {
         e.preventDefault();  // Prevent form refresh
-        
         let user_name = document.querySelector('input.username').value;
         let user_input = document.querySelector('input.message').value;
         if (!validation(user_input, user_name)) return;     // validation cause dont trust user at all  
 
-        if (document.cookie){
-            socket.emit('reconnect', document.cookie);
-        }
-
-        // document.cookie = `username=${encodeURIComponent(user_name)}; path=/;`; //Adding User as cookie for reconnection logic
+        let hours = 24;
+        const expiryTime = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
+        document.cookie = `username=${encodeURIComponent(user_name)}; expires=${expiryTime}; path=/;`; //Adding User as cookie for reconnection logic
         socket.emit('sign_in', user_name);
         document.querySelector('input.username').disabled = true; // Disabling username change, simple hack but doesn't work on reload of page 
         socket.emit('my event', { user_name: user_name, message: user_input });
@@ -37,6 +34,13 @@ socket.on('current_users', (users) => {
 });
 
 window.onload = function() {
+    if (document.cookie){
+        const user_name = getCookieValue('username');
+        if (user_name.length > 3){
+            document.querySelector("input.username").value = user_name;
+            document.querySelector('input.username').disabled = true;
+        }
+    }
     socket.emit("getChatLog");
 };
 
@@ -49,16 +53,15 @@ socket.on("chatLogForNewUsers", (chatLog)=>{
     }
 });
 
-/* Cors 
-const fetchPromise = fetch("https://bar.other");
 
-fetchPromise
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(data);
-  });
+socket.on("ConnectOrDisconnect", (message)=>{
+    // User connection Message
+    let message_holder = document.querySelector('div.message_holder');
+    let new_message = document.createElement('div');
+    new_message.innerHTML = `${message}`;
+    message_holder.appendChild(new_message);
+});
 
-*/
 
 function validation(input, name)
 {
@@ -76,4 +79,11 @@ function validation(input, name)
         return true;
 
     return false;
+}
+
+function getCookieValue(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+    return null;
 }
