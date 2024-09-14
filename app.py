@@ -42,4 +42,4 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
 # CORS example:
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=5000)
+    socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True)
