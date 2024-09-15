@@ -1,0 +1,11 @@
+{
+    "chatLog":{
+        "username": "Message"
+    },
+    "taskLog":{
+        "taskName": {
+            "status": false,
+            "Description": ""
+        }
+    }
+}

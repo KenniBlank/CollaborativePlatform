@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../static/img/favicon.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
     <title>{{ title }}</title>
 </head>
 <body>
-    <div class="message_holder"></div>
+    <!-- Chat Function -->
+    <div id="messageIcon" onclick="toggleWindow('chatWindow')"><img src="../static/img/chat/LOGO.svg"></div>
+    <div id="chatWindow">
+        <div class="message_holder"></div>
+        <form>
+            <input type="text" class="username" placeholder="User Name" required/>
+            <input type="text" class="message" placeholder="Messages" required/>
+            <input type="submit"/>
+        </form>
+    </div>
 
-    <form>
-        <input type="text" class="username" placeholder="User Name" required/>
-        <input type="text" class="message" placeholder="Messages" required/>
-        <input type="submit" />
-    </form>
+    <!-- Task Function -->
+    <div id="tasks"></div>
 </body>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='index.js') }}"></script>
+<script src="{{ url_for('static', filename='chat.js') }}"></script>
 </html>

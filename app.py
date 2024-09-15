@@ -12,7 +12,7 @@ chatLog = {}
 # Route to render the HTML page
 @app.route("/")
 def defaultRoute():
-    return render_template("index.html", title="HomePage")
+    return render_template("index.html", title="CCT Online") #Collaborative Communication Tasks
 
 # Event when a client connects and sends their username
 @socketio.on('sign_in')
@@ -20,8 +20,6 @@ def user_sign_in(user_name, methods=['GET', 'POST']):
     users[request.sid] = user_name  # Associate user with session ID which is unique to every client on joining
     socketio.emit('current_users', users)  # Broadcast current users to everyone
     socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.9em;\">{user_name} has joined the chat</i>")
-    print(f"New user signed in: {user_name}")
-    print(chatLog)
 
 @socketio.on("getChatLog")
 def chatLogging():
@@ -40,9 +38,9 @@ def messageReceived():
 
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
-    print(f"Received event: {json}")
     chatLog[json['user_name']] = json['message']
-    socketio.emit('my response', json, callback=messageReceived) #this is send to all users by default
+    socketio.emit('my response', json, callback=messageReceived) #this is sent to all users by default
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True)
+    print("http://192.168.1.91:5000")
+    socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True, host="0.0.0.0")
