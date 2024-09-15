@@ -4,7 +4,7 @@
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 1em;}
 
-#messageIcon {
+.Icon, #chat {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -13,13 +13,24 @@
     background-color: #007bff;
     border-radius: 50%;
     padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+}
+#task{
+    position: fixed;
+    bottom: 80px;
+}
+img{
+    margin-left: 0.3rem;
+    margin-top: 0.3rem;
 }
 
 #chatWindow {
     display: none;
     position: fixed;
+    overflow-y: auto;
     bottom: 60px;
-    right: 60px;
+    right: 80px;
     width: 300px;
     background-color: white;
     border-radius: 10px;
@@ -55,10 +66,36 @@
 }
 
 .message_holder {
-    height: 150px;
+    height: 10rem;
+    max-height: 15rem;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 5px;
     margin-bottom: 10px;
     border-radius: 0.3rem;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 475px) {
+    #chatWindow{
+        max-width: 250px;
+        margin: auto;
+    }
+
+    @media (max-width: 430px){
+        #chatWindow{
+            max-width: 200px;
+        }
+    }
+    @media (max-width: 370px){
+        #chatWindow{
+            max-width: 180px;
+        }
+    }
+    @media (max-width: 320px){
+        #chatWindow{
+            max-width: 150px;
+        }
+    }
 }
