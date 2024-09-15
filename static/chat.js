@@ -30,7 +30,8 @@ socket.on('connect', () => {
         const expiryTime = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
         document.cookie = `username=${encodeURIComponent(user_name)}; expires=${expiryTime}; path=/;`; //Adding User as cookie for reconnection logic
         
-        socket.emit('sign_in', user_name);
+        if (document.querySelector('input.username').disabled != true)
+            socket.emit('sign_in', user_name);
         document.querySelector('input.username').disabled = true; // Disabling username change, simple hack
         socket.emit('my event', { user_name: user_name, message: user_input });
         document.querySelector('input.message').value = '';
