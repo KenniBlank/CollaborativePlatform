@@ -23,6 +23,7 @@ socket.on('connect', () => {
     document.querySelector('form').addEventListener('submit', (e) => {
         e.preventDefault();  // Prevent from refresh
         let user_name = document.querySelector('input.username').value;
+        user_name = user_name.trim();
         let user_input = document.querySelector('input.message').value;
         if (!validation(user_input, user_name)) return;     // validation cause dont trust user at all  
 
@@ -33,7 +34,7 @@ socket.on('connect', () => {
         if (document.querySelector('input.username').disabled != true)
             socket.emit('sign_in', user_name);
         document.querySelector('input.username').disabled = true; // Disabling username change, simple hack
-        socket.emit('my event', { user_name: user_name, message: user_input });
+        socket.emit('my event', { user_name: user_name, message: user_input});
         document.querySelector('input.message').value = '';
         document.querySelector('input.message').focus();
     });
@@ -48,16 +49,12 @@ socket.on('my response', (msg) => {
     }
 });
 
-socket.on('current_users', (users) => {
-    console.log("Connected users:", users);
-});
-
-
 socket.on("chatLogForNewUsers", (chatLog)=>{
     for (const key in chatLog) {
         let message_holder = document.querySelector('div.message_holder');
         let new_message = document.createElement('div');
-        new_message.innerHTML = `<b style="color: #000">${key}</b>: ${chatLog[key]}`;
+        let timeName = key.split(" ");
+        new_message.innerHTML = `<b style="color: #000">${timeName[1]}</b>: ${chatLog[key]}<br>`;
         message_holder.appendChild(new_message);
     }
 });
@@ -82,9 +79,9 @@ function validation(input, name)
         document.querySelector("input.username").setAttribute("minlength", "3");
         document.querySelector("input.username").setAttribute("maxlength", "12");
     }
-    else 
+    else{
         return true;
-
+    } 
     return false;
 }
 
@@ -96,4 +93,12 @@ function toggleWindow(message) {
     } else {
         chatWindow.style.display = 'none';
     }
+}
+
+
+function convertDateString(dateString) {
+    const [datePart, timePart] = dateString.split('*');
+    const [year, month, day] = datePart.split('-');
+    const time = timePart.split('.')[0];
+    return `(${year}-${month}-${day}) ${time}`;
 }

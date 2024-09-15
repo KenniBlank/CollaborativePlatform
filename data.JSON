@@ -1,11 +1,17 @@
 {
-    "chatLog":{
-        "username": "Message"
+    "chatLog": {
+        "2024-09-16*01:46:57.376 Kenni": "Hello Bro",
+        "2024-09-16*01:51:40.584 Kenni": "Yeah Hello",
+        "2024-09-16*01:56:42.424 Kenni": "Yo",
+        "2024-09-16*01:57:08.724 Stranger": "Hello",
+        "2024-09-16*03:33:06.063 Biraj": "Yo",
+        "2024-09-16*03:42:37.382 Kenni": "Yo"
     },
-    "taskLog":{
+    "taskLog": {
         "taskName": {
             "status": false,
             "Description": ""
         }
-    }
+    },
+    "users": []
 }
