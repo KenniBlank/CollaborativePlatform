@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link rel="icon" type="image/png" href="../../static/img/favicon.png"> -->
+</head>
+<body>
+    <button id="CreateRoom">Create Room</button>
+    <button id="JoinRoom">Join Room</button>
+    <video id="local" autoplay></video>
+    <video id="remote" autoplay></video>
+</body>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+<script>
+    const iceServers = [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:global.stun.twilio.com:3478" },
+        { urls: "stun:stun.1und1.de:3478" }
+    ];
+
+    const socket = io();
+    const peerConnection = new RTCPeerConnection({ iceServers });
+
+    // Event listener for Join Room button
+    document.getElementById("JoinRoom").addEventListener('click', async () => {
+        document.getElementById("CreateRoom").style.display = "none";
+
+        socket.emit('retrieveOffer');
+        socket.on('returnOffer', async (offer) => {
+            try {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit("answer", answer);
+            } catch (error) {
+                console.error("Error handling offer:", error);
+            }
+        });
+
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                document.getElementById("local").srcObject = stream;
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+                console.log("Local stream added");
+            })
+            .catch(error => console.error("Error accessing media devices:", error));
+
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                console.log("Sending candidate from client:", event.candidate);
+                socket.emit("candidateFromClient", event.candidate);
+            }
+        };
+
+        socket.on("candidateToClient", (candidate) => {
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                .catch(e => console.error("Error adding received ICE candidate:", e));
+            console.log("Received candidate from host");
+        });
+
+        peerConnection.ontrack = event => {
+            document.getElementById("remote").srcObject = event.streams[0];
+            console.log("Remote stream received");
+        };
+    });
+
+    // Event listener for Create Room button
+    document.getElementById("CreateRoom").addEventListener('click', async () => {
+        document.getElementById("JoinRoom").style.display = "none";
+
+        try {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit("offer", offer);
+            console.log("Offer sent to server");
+        } catch (error) {
+            console.error("Error creating or sending offer:", error);
+        }
+
+        requestAnswerUntilAvailable();
+
+        async function requestAnswerUntilAvailable() {
+            while (true) {
+                socket.emit('retrieveAnswer');
+                const answer = await new Promise(resolve => {
+                    const onAnswer = (response) => {
+                        socket.off('returnAnswer', onAnswer);
+                        resolve(response);
+                    };
+                    socket.on('returnAnswer', onAnswer);
+                });
+
+                if (answer) {
+                    try {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                        console.log("Answer received and set");
+                        break;
+                    } catch (error) {
+                        console.error("Error handling answer:", error);
+                    }
+                } else {
+                    console.log("Answer not available, retrying in 5 seconds...");
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                }
+            }
+        }
+
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                document.getElementById("local").srcObject = stream;
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+                console.log("Local stream added");
+            })
+            .catch(error => console.error("Error accessing media devices:", error));
+
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                console.log("Sending candidate from host:", event.candidate);
+                socket.emit("candidateFromHost", event.candidate);
+            }
+        };
+
+        socket.on("candidateToHost", (candidate) => {
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                .catch(e => console.error("Error adding received ICE candidate:", e));
+            console.log("Received candidate from client");
+        });
+
+        peerConnection.ontrack = event => {
+            document.getElementById("remote").srcObject = event.streams[0];
+            console.log("Remote stream received");
+        };
+    });
+</script>
+</html>
