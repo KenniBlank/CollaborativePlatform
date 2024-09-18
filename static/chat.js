@@ -40,11 +40,20 @@ socket.on('connect', () => {
     });
 });
 
+socket.on("invalidUsername", () => {
+    let usernameInput = document.querySelector("input.username");
+    usernameInput.value = ""; 
+    usernameInput.setCustomValidity("Username Already Exists"); 
+    usernameInput.reportValidity();
+});
+
+
 socket.on('my response', (msg) => {
     if (typeof msg.user_name !== 'undefined') {
         let message_holder = document.querySelector('div.message_holder');
         let new_message = document.createElement('div');
-        new_message.innerHTML = `<b>${msg.user_name}</b>: ${msg.message}`;
+        let timeName = msg.user_name.split(" ");
+        new_message.innerHTML = `<b>${timeName[1]}</b>: ${msg.message}`;
         message_holder.appendChild(new_message);
     }
 });
@@ -79,15 +88,22 @@ function validation(input, name)
         document.querySelector("input.username").setAttribute("minlength", "3");
         document.querySelector("input.username").setAttribute("maxlength", "12");
     }
-    else{
+    else if (!/^[a-zA-Z0-9]+$/.test(name)) {
+        let usernameInput = document.querySelector("input.username");
+        usernameInput.setCustomValidity("Invalid Username");
+        usernameInput.reportValidity();
+    } else {
+        let usernameInput = document.querySelector("input.username");
+        usernameInput.setCustomValidity("");
+        usernameInput.reportValidity();
         return true;
     } 
     return false;
 }
 
 
-function toggleWindow(message) {
-    const chatWindow = document.getElementById(message);
+function toggleWindow(id) {
+    const chatWindow = document.getElementById(id);
     if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
         chatWindow.style.display = 'block';
     } else {

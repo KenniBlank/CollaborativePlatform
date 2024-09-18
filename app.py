@@ -18,16 +18,26 @@ def defaultRoute():
 # Event when a client connects and sends their username
 @socketio.on('sign_in')
 def user_sign_in(user_name, methods=['GET', 'POST']):
-    users[request.sid] = user_name  # Associate user with session ID which is unique to every client on joining
-    socketio.emit('current_users', users)  # Broadcast current users to everyone
-    socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.9em;\">{user_name} has joined the chat</i>")
+    users[request.sid] = user_name 
+    socketio.emit('current_users', users) 
+    with open("data.JSON", "r") as file:
+        json_data = json.load(file)
+    
+    stored_users = json_data["users"]
+    if user_name in stored_users:
+        socketio.emit("invalidUsername")
+    else:
+        stored_users.append(user_name)
+        json_data["users"] = stored_users
+        with open("data.JSON", "w") as file:
+            json.dump(json_data, file, indent=4)  # Write with indentation for readability
+    socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.8rem;\">{user_name} has joined the chat</i>")
 
 @socketio.on("getChatLog")
 def chatLogging():
     with open('data.JSON', 'r') as file:
         json_data = json.load(file)
     chatLog = json_data.get('chatLog', {})
-    print(chatLog)
     socketio.emit("chatLogForNewUsers", chatLog, room=request.sid) # Broadcast to the user only
 
 
@@ -35,7 +45,7 @@ def chatLogging():
 @socketio.on('disconnect')
 def on_disconnect():
     removed_user = users.pop(request.sid, 'Spectator')
-    socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.9em;\">{removed_user} has left the chat</i>")
+    socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.8rem;\">{removed_user} has left the chat</i>")
 
 def messageReceived():
     print('Message received!')
@@ -59,3 +69,4 @@ def handle_my_custom_event(jsonData, methods=['GET', 'POST']):
 if __name__ == '__main__':
     print("http://192.168.1.91:5000")
     socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True, host="0.0.0.0")
+    
