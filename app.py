@@ -6,8 +6,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-# Dictionary to track connected users
 users = {}
 
 # Route to render the HTML page
@@ -19,7 +17,6 @@ def defaultRoute():
 @socketio.on('sign_in')
 def user_sign_in(user_name, methods=['GET', 'POST']):
     users[request.sid] = user_name 
-    socketio.emit('current_users', users) 
     with open("data.JSON", "r") as file:
         json_data = json.load(file)
     
@@ -40,15 +37,10 @@ def chatLogging():
     chatLog = json_data.get('chatLog', {})
     socketio.emit("chatLogForNewUsers", chatLog, room=request.sid) # Broadcast to the user only
 
-
-# Event when a user disconnects: This is socket io default
 @socketio.on('disconnect')
 def on_disconnect():
     removed_user = users.pop(request.sid, 'Spectator')
     socketio.emit('ConnectOrDisconnect', f"<i style=\"color: #000; font-size: 0.8rem;\">{removed_user} has left the chat</i>")
-
-def messageReceived():
-    print('Message received!')
 
 @socketio.on('my event')
 def handle_my_custom_event(jsonData, methods=['GET', 'POST']):
@@ -63,8 +55,31 @@ def handle_my_custom_event(jsonData, methods=['GET', 'POST']):
 
     with open('data.JSON', 'w') as file:
         json.dump(json_data, file, indent=4)
-    socketio.emit('my response', { "user_name": key, "message": jsonData["message"]}, callback=messageReceived)
+    socketio.emit('my response', { "user_name": key, "message": jsonData["message"]})
 
+@socketio.on("newTask")
+def newTaskAddition(data):
+    taskName = data.get("taskName")
+    taskDescription = data.get("taskDescription", "----")
+    if taskName:
+        with open("data.JSON", "r") as file:
+            json_data = json.load(file)
+        if "taskLog" not in json_data:
+            json_data["taskLog"] = {}
+        json_data["taskLog"][taskName] = {
+            "status": False,
+            "description": taskDescription
+        }
+        with open("data.JSON", "w") as file:
+            json.dump(json_data, file, indent=4)
+        socketio.emit("task", {taskName: {"status": False, "description": taskDescription}})
+
+@socketio.on("getTaskLog")
+def taskLogging():
+    with open('data.JSON', 'r') as file:
+        json_data = json.load(file)
+    taskLog = json_data.get("taskLog", {})
+    socketio.emit("taskLogForNewUsers", taskLog, room=request.sid)
 
 if __name__ == '__main__':
     print("http://192.168.1.91:5000")

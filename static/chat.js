@@ -9,6 +9,7 @@ window.onload = function() {
             socket.emit("sign_in", user_name);
         }
     }
+    socket.emit("getTaskLog");
     socket.emit("getChatLog");
 };
 function getCookieValue(name) {
@@ -44,6 +45,9 @@ socket.on("invalidUsername", () => {
     let usernameInput = document.querySelector("input.username");
     usernameInput.value = ""; 
     usernameInput.setCustomValidity("Username Already Exists"); 
+    usernameInput.reportValidity();
+
+    usernameInput.setCustomValidity("");
     usernameInput.reportValidity();
 });
 
@@ -118,3 +122,43 @@ function convertDateString(dateString) {
     const time = timePart.split('.')[0];
     return `(${year}-${month}-${day}) ${time}`;
 }
+
+// Tasks
+document.getElementById("addTask").onclick = taskAdd;
+
+socket.on("task", (data) => {
+    let task_holder = document.querySelector('div.task_holder');
+    let new_task = document.createElement('div');
+    for (const taskName in data)
+    {
+        taskDescription = data[taskName]["description"];
+        taskState = data[taskName]["status"];
+
+        new_task.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}<br>`;
+        task_holder.appendChild(new_task);
+    }
+});
+
+function taskAdd(e) {
+    e.preventDefault();
+    const taskName = document.getElementById("taskName").value;
+    const taskDescription = document.getElementById("taskDescription").value; // Corrected selector
+    socket.emit("newTask", {
+        taskName: taskName,
+        taskDescription: taskDescription
+    });
+}
+
+socket.on("taskLogForNewUsers", (taskLog)=>{
+    for (const taskName in taskLog) {
+        let task_holder = document.querySelector('div.task_holder');
+        let new_task = document.createElement('div');
+
+        taskDescription = taskLog[taskName]["description"];
+        taskState = taskLog[taskName]["status"];
+
+        new_task.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}<br>`;
+        task_holder.appendChild(new_task);
+    }
+});
+

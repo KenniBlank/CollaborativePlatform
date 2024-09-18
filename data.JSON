@@ -1,12 +1,14 @@
 {
     "chatLog": {
+        "2024-09-18*16:59:25.165 Guide": "This is the Start of the Conversation"
     },
     "taskLog": {
-        "taskName": {
+        "Create TODO": {
             "status": false,
-            "Description": ""
+            "description": "Create the full todo functionality"
         }
     },
     "users": [
+        "Guide"
     ]
 }
