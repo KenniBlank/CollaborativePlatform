@@ -145,7 +145,7 @@ socket.on("task", (newTask) => {
     checkbox.onclick = () => taskStateUpdate(taskName);
         
     let label = document.createElement('label');
-    label.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}, status = ${taskState}`;
+    label.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}`;
 
     let deleteButton = document.createElement('img');
     deleteButton.src = "../static/img/task/bin.png";
