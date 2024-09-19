@@ -23,13 +23,13 @@
     </div>
 
     <!-- Task Function -->
-    <div class="Icon" id="task" onclick="toggleWindow('taskWindow')"><img src="../static/img/task/LOGO.svg" alt="Task Logo"></div>
+    <div class="Icon" id="taskLogo" onclick="toggleWindow('taskWindow')"><img src="../static/img/task/LOGO.svg" alt="Task Logo"></div>
     <div id="taskWindow">
         <div class="task_holder"></div>
         <form>
             <input type="text" id="taskName" placeholder="Task Name" autocomplete="off" required />
             <input type="text" id="taskDescription" placeholder="Task Description" autocomplete="off" />
-            <input type="submit" id="addTask" value="Add Task" />
+            <button type="submit" id="addTask" value="Add Task">Add Task<img src="../static/img/task/addTask.svg"></button>
         </form>
     </div>    
 </body>

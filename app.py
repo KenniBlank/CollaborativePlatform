@@ -81,6 +81,29 @@ def taskLogging():
     taskLog = json_data.get("taskLog", {})
     socketio.emit("taskLogForNewUsers", taskLog, room=request.sid)
 
+@socketio.on("changeInStatusOfTask")
+def changeTaskStatus(data):
+    if data["color"] == "red":
+        status = True
+    else:
+        status = False
+    taskName = data["taskId"]
+    with open("data.JSON", 'r') as file:
+        json_data = json.load(file)
+    json_data["taskLog"][taskName]["status"] = status
+    with open("data.JSON", "w") as file:
+        json.dump(json_data, file, indent=4)
+    socketio.emit("changeColorOfTask", data)
+
+@socketio.on("deleteTask")
+def changeTask(ID):
+    with open("data.JSON", "r") as file:
+        json_data = json.load(file)
+    json_data["taskLog"].pop(ID, None)
+    with open("data.JSON", "w") as file:
+        json.dump(json_data, file, indent = 4)
+    socketio.emit("deleteFromLocalTask", ID)
+
 if __name__ == '__main__':
     print("http://192.168.1.91:5000")
     socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True, host="0.0.0.0")

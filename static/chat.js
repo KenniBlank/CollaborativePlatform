@@ -126,18 +126,74 @@ function convertDateString(dateString) {
 // Tasks
 document.getElementById("addTask").onclick = taskAdd;
 
-socket.on("task", (data) => {
+socket.on("task", (newTask) => {
     let task_holder = document.querySelector('div.task_holder');
-    let new_task = document.createElement('div');
-    for (const taskName in data)
-    {
-        taskDescription = data[taskName]["description"];
-        taskState = data[taskName]["status"];
 
-        new_task.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}<br>`;
-        task_holder.appendChild(new_task);
-    }
+    let task = document.createElement('div');
+    task.classList.add("task");
+    
+    const taskName = Object.keys(newTask)[0];
+    task.id = taskName;
+    
+    let taskDescription = newTask[taskName]["description"];
+    let taskState = newTask[taskName]["status"];
+
+    console.log(taskName, taskDescription, taskState);
+
+    checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.onclick = () => taskStateUpdate(taskName);
+        
+    let label = document.createElement('label');
+    label.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}, status = ${taskState}`;
+
+    let deleteButton = document.createElement('img');
+    deleteButton.src = "../static/img/task/bin.png";
+    deleteButton.alt = "delete task button";
+    deleteButton.style.cursor = "pointer";
+    deleteButton.classList.add("taskImage");
+    deleteButton.onclick = () => deleteTask(taskName);
+
+    task.appendChild(checkbox);
+    task.appendChild(label);
+    task.appendChild(deleteButton);
+
+    task_holder.appendChild(task);
 });
+
+function deleteTask(taskId){
+    socket.emit("deleteTask", taskId);
+}
+
+socket.on("deleteFromLocalTask", (taskId)=> {
+    let deleteButton = document.getElementById(taskId);
+    if (deleteButton) {
+        let parentDiv = deleteButton.closest('div.task');
+        if (parentDiv)
+            parentDiv.remove();
+    }
+})
+
+function taskStateUpdate(taskId) {
+    let task = document.getElementById(taskId);
+    let color = "";
+    if (task) {
+        if (task.style.backgroundColor === "red")
+            color = "";
+        else
+            color = "red";
+        socket.emit("changeInStatusOfTask", { taskId: taskId, color: color });
+    }
+}
+
+socket.on("changeColorOfTask", (data) => {
+    let { taskId, color } = data;
+    let task = document.getElementById(taskId);
+    if (task)
+        task.style.backgroundColor = color;
+});
+
+
 
 function taskAdd(e) {
     e.preventDefault();
@@ -149,16 +205,44 @@ function taskAdd(e) {
     });
 }
 
-socket.on("taskLogForNewUsers", (taskLog)=>{
-    for (const taskName in taskLog) {
-        let task_holder = document.querySelector('div.task_holder');
-        let new_task = document.createElement('div');
+socket.on("taskLogForNewUsers", (taskLog) => {
+    let taskHolder = document.querySelector('div.task_holder');
+    
+    // Clear the task holder to avoid duplicates (if needed)
+    taskHolder.innerHTML = '';
 
-        taskDescription = taskLog[taskName]["description"];
-        taskState = taskLog[taskName]["status"];
+    for (const taskName in taskLog) {        
+        let taskDescription = taskLog[taskName]["description"];
+        let taskState = taskLog[taskName]["status"];
 
-        new_task.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}<br>`;
-        task_holder.appendChild(new_task);
+        // Create a task element with a checkbox and delete button
+        let task = document.createElement('div');
+        task.classList.add("task");
+        if (taskState == false)
+            task.style.backgroundColor = "";
+        else
+            task.style.backgroundColor = "Red";
+        task.id = taskName;
+
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = taskState;
+        checkbox.onclick = () => taskStateUpdate(taskName);
+
+        let label = document.createElement('label');
+        label.innerHTML = `<b style="color: #000">${taskName}</b>: ${taskDescription}`;
+        
+        let deleteButton = document.createElement('img');
+        deleteButton.src = "../static/img/task/bin.png";
+        deleteButton.alt = "delete task button";
+        deleteButton.style.cursor = "pointer";
+        deleteButton.classList.add("taskImage");
+        deleteButton.onclick = () => deleteTask(taskName);
+
+        task.appendChild(checkbox);
+        task.appendChild(label);
+        task.appendChild(deleteButton);
+        taskHolder.appendChild(task);
     }
 });
 
