@@ -83,7 +83,7 @@ def taskLogging():
 
 @socketio.on("changeInStatusOfTask")
 def changeTaskStatus(data):
-    if data["color"] == "red":
+    if data["color"] != "":
         status = True
     else:
         status = False

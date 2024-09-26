@@ -178,10 +178,10 @@ function taskStateUpdate(taskId) {
     let task = document.getElementById(taskId);
     let color = "";
     if (task) {
-        if (task.style.backgroundColor === "red")
-            color = "";
+        if (task.style.backgroundColor == "")
+            color = "rgb(249, 74, 74)";
         else
-            color = "red";
+            color = "";
         socket.emit("changeInStatusOfTask", { taskId: taskId, color: color });
     }
 }
@@ -189,8 +189,13 @@ function taskStateUpdate(taskId) {
 socket.on("changeColorOfTask", (data) => {
     let { taskId, color } = data;
     let task = document.getElementById(taskId);
+    let checkbox = task.querySelectorAll('input[type="checkbox"]');
     if (task)
         task.style.backgroundColor = color;
+    if (color)    
+        task.style.color = "White";
+    else
+        task.style.color = "black";
 });
 
 
