@@ -1,19 +1,12 @@
 {
-    "chatLog": {
-        "2024-09-20*23:20:16.965 Biraj": "Hello Guys",
-        "2024-09-20*23:20:24.600 Biraj": "How are yall"
-    },
+    "chatLog": {},
     "taskLog": {
-        "New Task": {
+        "Conquer the World": {
             "status": false,
-            "description": "Do it"
-        },
-        "Do the dishes": {
-            "status": false,
-            "description": "Do it"
+            "description": "I want the world to crumble down my feet"
         }
     },
     "users": [
-        "Biraj"
+        "Hello"
     ]
 }

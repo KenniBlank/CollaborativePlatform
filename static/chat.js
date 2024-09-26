@@ -106,15 +106,33 @@ function validation(input, name)
 }
 
 
-function toggleWindow(id) {
-    const chatWindow = document.getElementById(id);
-    if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
-        chatWindow.style.display = 'block';
-    } else {
-        chatWindow.style.display = 'none';
+function openWindow(id) {
+    const Window = document.getElementById(id);
+    
+    if (Window.style.display === 'none' || Window.style.display === '') {
+        Window.style.display = 'block';        
+        ToFocus(id);
+    }
+    else if(Window.style.zIndex == "0" && Window.style.display == "block"){
+        ToFocus(id);
     }
 }
 
+function closeWindow(id){
+    document.getElementById(id).style.display = "none";
+}
+
+function dragWindow(id){
+    Window = document.getElementById(id);
+}
+
+function ToFocus(id){
+    document.getElementById(id).style.zIndex = "1";
+    if (id === "taskWindow")
+        document.getElementById("chatWindow").style.zIndex = "0"; 
+    else
+        document.getElementById("taskWindow").style.zIndex = "0"; 
+}
 
 function convertDateString(dateString) {
     const [datePart, timePart] = dateString.split('*');

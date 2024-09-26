@@ -12,8 +12,9 @@
 
 
     <!-- Chat Function -->
-    <div class="Icon" id="chat" onclick="toggleWindow('chatWindow')"><img src="../static/img/chat/LOGO.svg" alt="Chat Logo"></div>
-    <div id="chatWindow">
+    <div class="Icon" id="chat" onclick="openWindow('chatWindow')"><img src="../static/img/chat/LOGO.svg" alt="Chat Logo"></div>
+    <div id="chatWindow" onclick="ToFocus('chatWindow')" ondrag="dragWindow('chatWindow')">
+        <img src="../static/img/closeWindow.svg" class="closeWindow" onclick="closeWindow('chatWindow')">
         <div class="message_holder"></div>
         <form>
             <input type="text" class="username" placeholder="User Name" required/>
@@ -23,8 +24,9 @@
     </div>
 
     <!-- Task Function -->
-    <div class="Icon" id="taskLogo" onclick="toggleWindow('taskWindow')"><img src="../static/img/task/LOGO.svg" alt="Task Logo"></div>
-    <div id="taskWindow">
+    <div class="Icon" id="taskLogo" onclick="openWindow('taskWindow')"><img src="../static/img/task/LOGO.svg" alt="Task Logo"></div>
+    <div id="taskWindow" onclick="ToFocus('taskWindow')" ondrag="dragWindow('taskWindow')">
+        <img src="../static/img/closeWindow.svg" class="closeWindow" onclick="closeWindow('taskWindow')">
         <div class="task_holder"></div>
         <form>
             <input type="text" id="taskName" placeholder="Task Name" autocomplete="off" required />
